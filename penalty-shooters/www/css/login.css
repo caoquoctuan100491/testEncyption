@@ -1,0 +1,45 @@
+.window_login {
+  width: 48%;
+  height: 58%;
+  background: transparent;
+}
+
+#btnOK {
+  /* background: url(../img/system/btn_ok.png) no-repeat; */
+  /* border-radius: 50px; */
+  width: 16%;
+  height: 22%;
+  border-color: transparent;
+}
+
+.btn_large {
+  width: 21%;
+  height: 15%;
+}
+
+.btn_small {
+  width: 16%;
+  height: 11%;
+}
+
+/* #btnTabLogin {
+  background-image: url('../img/system/BTN_LOGIN.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: transparent;
+} */
+
+/* @media only screen and (orientation:landscape) and (max-width:1330px){
+    #divContent {
+      transform: rotate(90deg);
+    }
+    #GameCanvas {
+      transform: rotate(90deg);
+    }
+    #GameVideo {
+      transform: rotate(90deg);
+    }
+    #UpperCanvas{
+      transform: rotate(90deg);
+    }
+  } */

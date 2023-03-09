@@ -1,0 +1,98 @@
+#divTable {
+  overflow: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  scrollbar-color: #083E40 #FFFFFF;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #083E40 50%;
+  border-radius: 26px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #FFFFFF 50%;
+  border-radius: 26px;
+}
+
+/* Handle on hover */
+/* ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  } */
+
+#divTable table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#divTable table tr {
+  height: 60px;
+  border-bottom: 1px solid #FFFFFF;
+}
+
+#divTable table tr td {
+  /* background: rgba(2, 33, 40, 0.9); */
+  color: #fff;
+  text-align: center;
+  font-size: 28px;
+  font-family: "Montserrat_Regular";
+  font-weight: bold;
+}
+
+#divTable .history-datetime {
+  font-size: 20px;
+  color: white;
+  font-family: 'Montserrat_Regular';
+  width: 42%;
+}
+
+#divTable .history-score {
+  font-size: 30px;
+  color: #FDE878;
+  font-family: 'Montserrat_Black';
+  width: 35%;
+}
+
+.history-icon img {
+  width: 53%;
+  height: auto;
+  padding-top: 5px;
+}
+
+.rank-stt {
+  font-size: 20px;
+  color: white;
+  font-family: 'Montserrat_Black';
+  width: 15%;
+}
+
+.rank-stt img {
+  width: 80%;
+  height: auto;
+}
+
+.rank-username {
+  width: 60%;
+  font-size: 24px;
+  color: #FFFFFF;
+  font-family: 'Montserrat_Black';
+}
+
+.rank-point {
+  font-size: 24px;
+  color: #FFFFFF;
+  font-family: 'Montserrat_Black';
+}
+
+.rank-icon img {
+  width: 75%;
+  height: auto;
+}

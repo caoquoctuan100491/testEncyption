@@ -1,0 +1,16 @@
+#main-rule {
+  width: 100%;
+  height: 100%;
+  /* background-image: url(../img/pictures/rule_bg.png); */
+  background-size: cover;
+  background-position: top center;
+  background-attachment: local;
+  text-align: center;
+  padding-top: 10px;
+  position: relative;
+  margin: 0 auto;
+}
+
+#divContent {
+  overflow: hidden;
+}

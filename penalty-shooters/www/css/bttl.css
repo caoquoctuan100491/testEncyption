@@ -1,0 +1,19 @@
+#divMocPhanThuong {
+  background-color: transparent;
+  overflow: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+#divMocPhanThuong a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+/* #divMocPhanThuong::-webkit-scrollbar {
+    background-color: transparent;
+    display: none;
+  } */
