@@ -329,7 +329,6 @@ function Scene_Splash() {
       $gamePlayer._win = 0;
       $gamePlayer._lose = 0;
       initApi();
-      initImage();
 
       Window_TitleCommand.initCommandPosition();
     }

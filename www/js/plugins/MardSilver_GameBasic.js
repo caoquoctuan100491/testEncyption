@@ -74,22 +74,6 @@ ReloadImage = () => {
 };
 // ReloadImage();
 
-function initImage() {
-  $dataMapHUD.forEach((e) => {
-    $gameScreen.showPicture(
-      e.id,
-      e.Image,
-      1,
-      e.x,
-      e.y,
-      e["Scale X"] * 100,
-      e["Scale Y"] * 100,
-      parseInt(e.Opacity),
-      parseInt(e.Blend)
-    );
-  });
-}
-
 function initApi() {
   $.ajaxSetup({
     headers: {
