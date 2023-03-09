@@ -183,30 +183,25 @@ function WindowManager() {
 }
 
 // Fix the flag check for 1.6 editor and 1.5 or below project
-try {
-  if (process) {
-    if (
-      process.versions["node-webkit"] >= "0.13.0" &&
-      Utils.RPGMAKER_VERSION < "1.6.0"
-    ) {
-      Utils.isOptionValid = function (name) {
-        if (location.search.slice(1).split("&").contains(name)) {
-          return 1;
-        }
-        if (
-          typeof nw !== "undefined" &&
-          nw.App.argv.length > 0 &&
-          nw.App.argv[0].split("&").contains(name)
-        ) {
-          return 1;
-        }
-        return 0;
-      };
-    }
-  }
-} catch (error) {
-  let process;
-}
+
+// if (
+//   process.versions["node-webkit"] >= "0.13.0" &&
+//   Utils.RPGMAKER_VERSION < "1.6.0"
+// ) {
+//   Utils.isOptionValid = function (name) {
+//     if (location.search.slice(1).split("&").contains(name)) {
+//       return 1;
+//     }
+//     if (
+//       typeof nw !== "undefined" &&
+//       nw.App.argv.length > 0 &&
+//       nw.App.argv[0].split("&").contains(name)
+//     ) {
+//       return 1;
+//     }
+//     return 0;
+//   };
+// }
 
 (function (_) {
   "use strict";
@@ -230,11 +225,8 @@ try {
   _.banList = JSON.parse(params["Menu Editor Exempt List"]);
 
   _.isPlaytest = Utils.isOptionValid("test") && Utils.isNwjs();
-  if (process) {
-    _.isNewNWjs = process.versions["node-webkit"] >= "0.13.0";
-  } else {
-    _.isNewNWjs = false;
-  }
+  // _.isNewNWjs = process.versions["node-webkit"] >= "0.13.0";
+  _.isNewNWjs = false;
 
   if (_.isPlaytest && _.isNewNWjs) {
     if (!require("fs").existsSync("supertoolsengine.html"))
@@ -1409,10 +1401,11 @@ try {
   FileManager.filePath = function (location) {
     if (!Utils.isNwjs()) return "";
     const path = require("path");
-    if (process) {
-      const base = path.dirname(process.mainModule.filename);
-      return path.join(base, location);
-    }
+    const base = path.dirname(process.mainModule.filename);
+    console.log(location);
+    console.log(path.join(base, location));
+    // return path.join(base, location);
+    return "./" + location;
   };
 
   FileManager.saveData = function (variable, filename) {
@@ -2054,9 +2047,10 @@ try {
 
     DebugManager.localPath = function () {
       const path = require("path");
-      if (process) {
-        return path.dirname(process.mainModule.filename);
-      }
+      console.log(process.mainModule.filename);
+      console.log(path.dirname(process.mainModule.filename));
+      // return path.dirname(process.mainModule.filename);
+      return path;
     };
 
     DebugManager.getReopenPath = function () {

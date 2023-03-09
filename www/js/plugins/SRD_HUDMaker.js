@@ -1768,7 +1768,9 @@ function HUDManager() {
   _.Scene_Map_start = Scene_Map.prototype.start;
   Scene_Map.prototype.start = function () {
     _.Scene_Map_start.apply(this, arguments);
+    console.log(this._hud);
     if (this._hud) {
+      console.log($dataMapHUD);
       HUDManager.setup($dataMapHUD, this._hud);
       this._hud.refresh();
       this.createHudUpperLayer();
