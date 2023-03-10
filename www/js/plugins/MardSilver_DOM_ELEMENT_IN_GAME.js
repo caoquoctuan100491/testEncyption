@@ -122,3 +122,7 @@ Window_Base.prototype.createSpriteButton = function (
   this["_" + symbol].setClickHandler(onClick);
   this.addChild(this["_" + symbol]);
 };
+
+function test() {
+  console.log("123");
+}

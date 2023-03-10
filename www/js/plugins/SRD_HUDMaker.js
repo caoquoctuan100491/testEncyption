@@ -1141,6 +1141,35 @@ function HUDManager() {
     }
   };
 
+  HUDManager.createMethodInput = function (id, value) {
+    let bool = true;
+    // try {
+    //   if (value.length > 0) {
+    //     console.log("check run method");
+    //     // bool = eval(value);
+    //   }
+    // } catch (e) {
+    //   console.log(value + " \n" + e);
+    //   alert('There is an error with "' + value + '" Press F8 to see more!');
+    //   value = "";
+    // }
+    if (!value) {
+      value = "";
+    }
+    const color = bool ? _.trueColor : _.falseColor;
+    if (_.active) {
+      return `<tr id="method">
+					<td>${id}:</td>
+					<td><input type="text" id="${id}" onchange="HUDManager.refreshSprite()" value="${value}" style="background-color:${color};"></td>
+				</tr>`;
+    } else {
+      return `<tr id="method">
+					<td>${id}:</td>
+					<td><input type="text" id="${id}" value="${value}" style="background-color:${color};"></td>
+				</tr>`;
+    }
+  };
+
   HUDManager.createSelect = function (id) {
     let result = `<tr>
 					<td>${id}:</td>
@@ -2064,6 +2093,58 @@ function HUDManager() {
     this.setupAnimationInfo(data.animateInfo);
   };
 
+  Sprite_HUDObject.prototype.setClickHandler = function (method) {
+    this._clickHandler = method;
+  };
+
+  Sprite_HUDObject.prototype.callClickHandler = function () {
+    if (this._clickHandler) {
+      eval(this._clickHandler);
+    }
+  };
+
+  Sprite_HUDObject.prototype.processTouch = function () {
+    if (this._isActive) {
+      if (TouchInput.isTriggered() && this.isButtonTouched()) {
+        this._touching = true;
+      }
+      if (this._touching) {
+        if (TouchInput.isReleased() || !this.isButtonTouched()) {
+          this._touching = false;
+          if (TouchInput.isReleased()) {
+            this.callClickHandler();
+          }
+        }
+      }
+    } else {
+      this._touching = false;
+    }
+  };
+
+  Sprite_HUDObject.prototype.isButtonTouched = function () {
+    var x = this.canvasToLocalX(TouchInput.x);
+    var y = this.canvasToLocalY(TouchInput.y);
+    let center = { x: this.width / 2, y: this.height / 2 };
+    return x > -center.x && y > -center.y && x < center.x && y < center.y;
+  };
+  Sprite_HUDObject.prototype.canvasToLocalX = function (x) {
+    var node = this;
+    while (node) {
+      x -= node.x;
+      node = node.parent;
+    }
+    return x;
+  };
+
+  Sprite_HUDObject.prototype.canvasToLocalY = function (y) {
+    var node = this;
+    while (node) {
+      y -= node.y;
+      node = node.parent;
+    }
+    return y;
+  };
+
   Sprite_HUDObject.prototype.setupAnimationInfo = function (aniInfo) {
     //Dynamic Visibility
     this._condition = "";
@@ -2121,6 +2202,10 @@ function HUDManager() {
     Sprite.prototype.update.call(this);
     this.updateActivity();
     this.updateCondition();
+    if (this._clickHandler) {
+      this.processTouch();
+    }
+
     if (
       this._isActive ||
       ($gameTemp.isManipulatingHud && HUDManager.showPiecesType)
@@ -2410,6 +2495,10 @@ function HUDManager() {
   Sprite_HUDObject.prototype.refreshProperties = function () {
     this.updateRealScale();
     this._condition = this["Condition"];
+    if (this["Method"] && this["Method"] != "") {
+      this.setClickHandler(this["Method"]);
+    }
+
     this.updateActivity();
     if (this.isTarget) {
       this.updateConditionInput();
@@ -2533,6 +2622,7 @@ function HUDManager() {
     const alpha = data["Text Alpha"];
     const outlineColor = data["Outline Color"];
     const outlineAlpha = data["Outline Alpha"];
+    let method = data["Method"];
 
     const sele = ["", "", ""];
     if (align === "left") sele[0] = "selected";
@@ -2551,6 +2641,7 @@ function HUDManager() {
 				${HUDManager.createHeader()}
 				${HUDManager.createInput("Value", value)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createInput("Font", font)}
 				${HUDManager.createInput("Max Width", width)}
@@ -2613,6 +2704,7 @@ function HUDManager() {
     this.properties = [
       "Layer",
       "Condition",
+      "Method",
       "Max Width",
       "Font",
       "Align",
@@ -2708,6 +2800,7 @@ function HUDManager() {
   Sprite_HUDTextEx.getHtml = function (data) {
     const value = data["Value"];
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const width = data["Width"];
     const height = data["Height"];
@@ -2724,6 +2817,7 @@ function HUDManager() {
 				${HUDManager.createHeader()}
 				${HUDManager.createInput("Value", value)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createInput("Width", width)}
 				${HUDManager.createInput("Height", height)}
@@ -2755,7 +2849,14 @@ function HUDManager() {
 
   Sprite_HUDTextEx.prototype.initialize = function (info) {
     Sprite_HUDObject.prototype.initialize.call(this, new Bitmap(1, 1), info);
-    this.properties = ["Layer", "Condition", "Width", "Height", "Value"];
+    this.properties = [
+      "Layer",
+      "Condition",
+      "Method",
+      "Width",
+      "Height",
+      "Value",
+    ];
     for (let i = 0; i < this.properties.length; i++) {
       const prop = this.properties[i];
       this[prop] = info[prop];
@@ -2889,6 +2990,7 @@ function HUDManager() {
    */
   Sprite_HUDShape.getHtml = function (data) {
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const shape = data["Shape"];
     const width = data["Width"];
@@ -2937,6 +3039,7 @@ function HUDManager() {
 			<div style="width: 300px; height: 430px; overflow-y: auto;">
 			<table>
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createSelect(
           "Shape",
@@ -3001,6 +3104,7 @@ function HUDManager() {
     this.properties = [
       "Layer",
       "Condition",
+      "Method",
       "Shape",
       "Width",
       "Height",
@@ -3137,6 +3241,7 @@ function HUDManager() {
   Sprite_HUDImage.getHtml = function (data) {
     const image = data["Image"];
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const scaleX = data["Scale X"];
     const scaleY = data["Scale Y"];
@@ -3164,6 +3269,7 @@ function HUDManager() {
 				${HUDManager.createHeader()}
 				${HUDManager.createFilelist("Image", "pictures", image)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createInput("Scale X", scaleX)}
 				${HUDManager.createInput("Scale Y", scaleY)}
@@ -3205,6 +3311,7 @@ function HUDManager() {
     this.properties = [
       "Layer",
       "Condition",
+      "Method",
       "Image",
       "Scale X",
       "Scale Y",
@@ -3269,6 +3376,7 @@ function HUDManager() {
   Sprite_HUDCodeImage.getHtml = function (data) {
     const image = data["Image"];
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const scaleX = data["Scale X"];
     const scaleY = data["Scale Y"];
@@ -3304,6 +3412,7 @@ function HUDManager() {
 				${HUDManager.createHeader()}
 				${HUDManager.createInput("Image", image)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createInput("Scale X", scaleX)}
 				${HUDManager.createInput("Scale Y", scaleY)}
@@ -3350,6 +3459,7 @@ function HUDManager() {
     this.properties = [
       "Layer",
       "Condition",
+      "Method",
       "Image",
       "Scale X",
       "Scale Y",
@@ -3438,6 +3548,7 @@ function HUDManager() {
     const value = data["Cur. Value"];
     const max = data["Max Value"];
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const width = data["Width"];
     const height = data["Height"];
@@ -3474,6 +3585,7 @@ function HUDManager() {
 				${HUDManager.createInput("Cur. Value", value)}
 				${HUDManager.createInput("Max Value", max)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createInput("Width", width)}
 				${HUDManager.createInput("Height", height)}
@@ -3541,6 +3653,7 @@ function HUDManager() {
       "Cur. Value",
       "Max Value",
       "Condition",
+      "Method",
       "Layer",
       "Width",
       "Height",
@@ -3708,6 +3821,7 @@ function HUDManager() {
     const value = data["Cur. Value"];
     const max = data["Max Value"];
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const scaleX = data["Scale X"];
     const scaleY = data["Scale Y"];
@@ -3734,6 +3848,7 @@ function HUDManager() {
 				${HUDManager.createInput("Cur. Value", value)}
 				${HUDManager.createInput("Max Value", max)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createFilelist("Main Image", "gauge_images", main)}
 				${HUDManager.createFilelist("Back Image", "gauge_backs", back, true)}
@@ -3788,6 +3903,7 @@ function HUDManager() {
       "Cur. Value",
       "Max Value",
       "Condition",
+      "Method",
       "Layer",
       "Scale X",
       "Scale Y",
@@ -3966,6 +4082,7 @@ function HUDManager() {
   Sprite_HUDImageText.getHtml = function (data) {
     const value = data["Value"];
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const image = data["Image"];
     const scaleX = data["Scale X"];
@@ -3995,6 +4112,7 @@ function HUDManager() {
 				${HUDManager.createHeader()}
 				${HUDManager.createInput("Value", value)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createFilelist("Image", "numbers", image)}
 				${HUDManager.createInput("Scale X", scaleX)}
@@ -4043,6 +4161,7 @@ function HUDManager() {
       "Value",
       "Layer",
       "Condition",
+      "Method",
       "Image",
       "Scale X",
       "Scale Y",
@@ -4162,6 +4281,7 @@ function HUDManager() {
   Sprite_HUDFace.getHtml = function (data) {
     const value = data["Actor ID"];
     let condition = data["Condition"];
+    let method = data["Method"];
     const layer = data["Layer"];
     const width = data["Width"];
     const height = data["Height"];
@@ -4185,6 +4305,7 @@ function HUDManager() {
 				${HUDManager.createHeader()}
 				${HUDManager.createInput("Actor ID", value)}
 				${HUDManager.createConditionInput("Condition", condition)}
+        ${HUDManager.createMethodInput("Method", method)}
 				${HUDManager.createInput("Layer", layer)}
 				${HUDManager.createInput("Width", width)}
 				${HUDManager.createInput("Height", height)}
@@ -4234,6 +4355,7 @@ function HUDManager() {
       "Actor ID",
       "Layer",
       "Condition",
+      "Method",
       "Width",
       "Height",
       "Background Color",

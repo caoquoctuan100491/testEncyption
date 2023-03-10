@@ -184,24 +184,24 @@ function WindowManager() {
 
 // Fix the flag check for 1.6 editor and 1.5 or below project
 
-// if (
-//   process.versions["node-webkit"] >= "0.13.0" &&
-//   Utils.RPGMAKER_VERSION < "1.6.0"
-// ) {
-//   Utils.isOptionValid = function (name) {
-//     if (location.search.slice(1).split("&").contains(name)) {
-//       return 1;
-//     }
-//     if (
-//       typeof nw !== "undefined" &&
-//       nw.App.argv.length > 0 &&
-//       nw.App.argv[0].split("&").contains(name)
-//     ) {
-//       return 1;
-//     }
-//     return 0;
-//   };
-// }
+if (
+  process.versions["node-webkit"] >= "0.13.0" &&
+  Utils.RPGMAKER_VERSION < "1.6.0"
+) {
+  Utils.isOptionValid = function (name) {
+    if (location.search.slice(1).split("&").contains(name)) {
+      return 1;
+    }
+    if (
+      typeof nw !== "undefined" &&
+      nw.App.argv.length > 0 &&
+      nw.App.argv[0].split("&").contains(name)
+    ) {
+      return 1;
+    }
+    return 0;
+  };
+}
 
 (function (_) {
   "use strict";
@@ -225,8 +225,7 @@ function WindowManager() {
   _.banList = JSON.parse(params["Menu Editor Exempt List"]);
 
   _.isPlaytest = Utils.isOptionValid("test") && Utils.isNwjs();
-  // _.isNewNWjs = process.versions["node-webkit"] >= "0.13.0";
-  _.isNewNWjs = false;
+  _.isNewNWjs = process.versions["node-webkit"] >= "0.13.0";
 
   if (_.isPlaytest && _.isNewNWjs) {
     if (!require("fs").existsSync("supertoolsengine.html"))
@@ -1402,10 +1401,8 @@ function WindowManager() {
     if (!Utils.isNwjs()) return "";
     const path = require("path");
     const base = path.dirname(process.mainModule.filename);
-    console.log(location);
-    console.log(path.join(base, location));
-    // return path.join(base, location);
-    return "./" + location;
+    return path.join(base, location);
+    // return "./" + location;
   };
 
   FileManager.saveData = function (variable, filename) {
@@ -2047,10 +2044,7 @@ function WindowManager() {
 
     DebugManager.localPath = function () {
       const path = require("path");
-      console.log(process.mainModule.filename);
-      console.log(path.dirname(process.mainModule.filename));
-      // return path.dirname(process.mainModule.filename);
-      return path;
+      return path.dirname(process.mainModule.filename);
     };
 
     DebugManager.getReopenPath = function () {

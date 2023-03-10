@@ -1,5 +1,6 @@
 [
 null,
 {"id":1,"expanded":true,"name":"Login","order":1,"parentId":0,"scrollX":819,"scrollY":461},
-{"id":2,"expanded":false,"name":"Game","order":2,"parentId":0,"scrollX":819,"scrollY":461}
+{"id":2,"expanded":false,"name":"Game","order":2,"parentId":0,"scrollX":819,"scrollY":461},
+{"id":3,"expanded":false,"name":"GoldFarm","order":3,"parentId":0,"scrollX":819,"scrollY":461}
 ]
